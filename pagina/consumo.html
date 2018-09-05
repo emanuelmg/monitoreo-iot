@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="Sistema de monitoreo IoT de EcoCasa">
+  <meta name="author" content="Emanuel Murillo">
+  <link rel="icon" type="image/png" sizes="96x96" href="css/casa.png">
+  <title>Monitoreo IoT</title>
+  <!-- Bootstrap core CSS-->
+  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom fonts for this template-->
+  <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <!-- Page level plugin CSS-->
+ 
+  <!-- Custom styles for this template-->
+  <link href="css/sb-admin.css" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/highcharts-more.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/modules/solid-gauge.js"></script>
+
+  <script src="mqttws31.js" type="text/javascript"></script>
+  <!--<script src="jquery.min.js" type="text/javascript"></script>-->
+  <script src="config.js" type="text/javascript"></script>
+
+  <!--  Fonts and icons -->    
+  <link href="http://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
+  <link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'> 
+  
+  <!-- Animation library for notifications   -->
+  <link href="css/animate.min.css" rel="stylesheet"/>
+
+
+</head>
+
+<body class="fixed-nav sticky-footer bg-dark" id="page-top">
+  <!-- Navigation-->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
+    <a class="navbar-brand" href="index.html">Sistema de monitoreo IoT de EcoCasa</a>
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarResponsive">
+      <ul class="navbar-nav navbar-sidenav" id="exampleAccordion">
+
+          <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Monitoreo">
+          <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#collapseMonitoreo" data-parent="#exampleAccordion">
+            <i class="fa fa-fw fa-dashboard"></i>
+            <span class="nav-link-text">Monitero</span>
+          </a>
+          <ul class="sidenav-second-level collapse" id="collapseMonitoreo">
+            <li>
+              <a href="index.html">Confort</a>
+            </li>
+            <li>
+              <a href="panel.html">Panel Solar</a>
+            </li>
+            <li>
+              <a href="aero.html">Aerogenerador</a>
+            </li>
+            <li>
+              <a href="consumo.html">Consumo</a>
+            </li>
+            <li>
+              <a href="bateria.html">Bateria</a>
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Historial">
+          <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#collapseHistorial" data-parent="#exampleAccordion">
+            <i class="fa fa-fw fa-area-chart"></i>
+            <span class="nav-link-text">Historial</span>
+          </a>
+          <ul class="sidenav-second-level collapse" id="collapseHistorial">
+            <li>
+              <a href="historialTemp.php">Temperatura/humedad</a>
+            </li>
+            <li>
+              <a href="historialPanel.php">Panel Solar</a>
+            </li>
+            <li>
+              <a href="historialAero.php">Aerogenerador</a>
+            </li>
+            <li>
+              <a href="historialConsumo.php">Consumo</a>
+            </li>
+            <li>
+              <a href="historialBateria.php">Batería</a>
+            </li>
+            <li>
+              <a href="historialLux.php">Iluminación</a>
+            </li>
+            <li>
+              <a href="historialRad.php">Radiación</a>
+            </li>
+          </ul>
+        </li>
+        
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Tables">
+          <a class="nav-link" href="exportar.html">
+            <i class="fa fa-fw fa-table"></i>
+            <span class="nav-link-text">Exportar</span>
+          </a>
+        </li>
+        
+          </ul>
+        </li>
+      </ul>
+      <ul class="navbar-nav sidenav-toggler">
+        <li class="nav-item">
+          <a class="nav-link text-center" id="sidenavToggler">
+            <i class="fa fa-fw fa-angle-left"></i>
+          </a>
+        </li>
+      </ul>
+      </ul>
+        <ul class="navbar-nav ml-auto">
+        <li class="nav-item dropdown">
+          
+            <img src="css/NegativoITSON.png" alt="itson" height="65" width="175">
+
+        </li>
+      </ul>
+      
+    </div>
+  </nav>
+  <div class="content-wrapper">
+    <div class="container-fluid">
+      <!-- Breadcrumbs-->
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a href="#">Monitoreo</a>
+        </li>
+        <li class="breadcrumb-item active">Consumo</li>
+      </ol>
+
+    <!-- paneles-->
+      <div class="card mb-3">
+        <div class="card-header">
+          <i class="fa fa-area-chart"></i>Consumo</div>
+        <div class="card-body">
+           <div class="col-xs-4 col-sm-8 col-md-12 my-auto" id="Vpanel" style="margin: 0 auto"></div>
+       
+              <div class="col-xs-4 col-sm-8 col-md-12 my-auto" id="Ipanel" style="margin: 0 auto"></div>
+          
+              <div class="col-xs-4 col-sm-8 col-md-12 my-auto" id="Wpanel" style="margin: 0 auto"></div>
+        </div>
+      </div>
+     
+
+    <!-- /.container-fluid-->
+    <!-- /.content-wrapper-->
+    <footer class="sticky-footer">
+      <div class="container">
+        <div class="text-center">
+          <small>Copyright © Emanuel Murillo García 2018</small>
+        </div>
+      </div>
+    </footer>
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+      <i class="fa fa-angle-up"></i>
+    </a>
+ 
+    <!-- Bootstrap core JavaScript-->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- Core plugin JavaScript-->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+    <!-- Custom scripts for all pages-->
+    <script src="js/sb-admin.min.js"></script>
+     <!--  Notifications Plugin    -->
+    <script src="js/bootstrap-notify.js"></script>
+    
+      
+
+    <script type="text/javascript">
+      esp1 = 0;
+      usuario1 = 'esp1';
+      voltajes = 0;
+      corrientes = 0;
+      wattes = 0;
+      usuario1 = 'esp1';
+      var mqtt;
+      var reconnectTimeout = 2000;
+
+       function MQTTconnect() {
+    if (typeof path == "undefined") {
+        path = '/mqtt';
+    }
+    mqtt = new Paho.MQTT.Client(
+            host,
+            port,
+            path,
+            "web_" + parseInt(Math.random() * 100, 10)
+    );
+        var options = {
+            timeout: 3,
+            useSSL: useTLS,
+            cleanSession: cleansession,
+            onSuccess: onConnect,
+            onFailure: function (message) {
+                $('#status').val("Connection failed: " + message.errorMessage + "Retrying");
+                setTimeout(MQTTconnect, reconnectTimeout);
+            }
+        };
+
+        mqtt.onConnectionLost = onConnectionLost;
+        mqtt.onMessageArrived = onMessageArrived;
+
+        if (username != null) {
+            options.userName = username;
+            options.password = password;
+        }
+        console.log("Host="+ host + ", port=" + port + ", path=" + path + " TLS = " + useTLS + " username=" + username + " password=" + password);
+        mqtt.connect(options);
+    }
+
+    function onConnect() {
+        $('#status').val('Connected to ' + host + ':' + port + path);
+        // Connection succeeded; subscribe to our topic
+        mqtt.subscribe(topic, {qos: 0});
+        $('#topic').val(topic);
+        
+         estado1 = new Paho.MQTT.Message("S");
+         estado1.destinationName = '/esp1/status'
+         mqtt.send(estado1);
+    
+          setTimeout(function(){ 
+
+          if(esp1 == 0){
+            $.notify({
+                icon: 'fa fa-microchip',
+                message: "Node 1 desconectado"
+
+            },{
+
+                type: 'danger',
+                timer: 2000
+            });  
+
+          }
+        
+         }, 7000);;
+    }
+
+    function onConnectionLost(response) {
+        setTimeout(MQTTconnect, reconnectTimeout);
+        $('#status').val("connection lost: " + responseObject.errorMessage + ". Reconnecting");
+    };
+
+     function onMessageArrived(message) {
+
+        
+        if (message.destinationName == 'vac') { //acá coloco el topic
+            //document.getElementById("temperatura1").textContent = message.payloadString  + " ºC";
+            //chartTemp1.refesh(message.payloadString);
+            voltajes = parseFloat(message.payloadString);
+        
+        }
+        if (message.destinationName == 'iac') { //acá coloco el topic
+            //document.getElementById("temperatura1").textContent = message.payloadString  + " ºC";
+            //chartTemp1.refesh(message.payloadString);
+            corrientes = parseFloat(message.payloadString);
+        
+        }
+        if (message.destinationName == 'wac') { //acá coloco el topic
+            //document.getElementById("temperatura1").textContent = message.payloadString  + " ºC";
+            //chartTemp1.refesh(message.payloadString);
+           wattes = parseFloat(message.payloadString);
+
+           web = new Paho.MQTT.Message("C");
+           web.destinationName = '/esp1/request'
+           mqtt.send(web); 
+        
+        }  
+        if (message.destinationName == '/' + usuario1 + '/' + 'status') { 
+
+             estado1 = message.payloadString;
+             if(estado1 == "ACK"){
+                esp1 = 1;
+                web = new Paho.MQTT.Message("C");
+                web.destinationName = '/esp1/request'
+                mqtt.send(web);
+                $.notify({
+                icon: 'fa fa-handshake-o',
+                message: "Node 1 conectado  <br> Espera Datos..."
+
+                },{
+
+                type: 'success',
+                timer: 2000
+                 });  
+                  
+             }
+
+
+             }
+    };
+
+
+     $(document).ready(function() {
+        MQTTconnect();
+
+
+
+
+    });
+
+      Highcharts.setOptions({
+    global: {
+        useUTC: false
+    }
+});
+
+var Vpanel = Highcharts.chart('Vpanel', {
+    chart: {
+        type: 'spline',
+        animation: Highcharts.svg, // don't animate in old IE
+        marginRight: 10,
+        events: {
+            load: function () {
+
+                // set up the updating of the chart each second
+                var series = this.series[0];
+                setInterval(function () {
+                    var x = (new Date()).getTime(), // current time
+                        y = voltajes;
+                    series.addPoint([x, y], true, true);
+                }, 1000);
+            }
+        }
+    },
+    title: {
+        text: 'Voltaje de la carga'
+    },
+    xAxis: {
+        type: 'datetime',
+        tickPixelInterval: 150
+    },
+    yAxis: {
+        title: {
+            text: 'Voltaje'
+        },
+        plotLines: [{
+            value: 0,
+            width: 1,
+            color: '#808080'
+        }]
+    },
+    tooltip: {
+        formatter: function () {
+            return '<b>' + this.series.name + '</b><br/>' +
+                Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                Highcharts.numberFormat(this.y, 2);
+        }
+    },
+    legend: {
+        enabled: false
+    },
+    exporting: {
+        enabled: false
+    },
+    series: [{
+        name: 'Volts',
+        data: (function () {
+            // generate an array of random data
+            var data = [],
+                time = (new Date()).getTime(),
+                i;
+
+            for (i = -19; i <= 0; i += 1) {
+                data.push({
+                    x: time + i * 1000,
+                    y: -1
+                });
+            }
+            return data;
+        }())
+    }]
+});
+
+
+var Ipanel = Highcharts.chart('Ipanel', {
+    chart: {
+        type: 'spline',
+        animation: Highcharts.svg, // don't animate in old IE
+        marginRight: 10,
+        events: {
+            load: function () {
+
+                // set up the updating of the chart each second
+                var series = this.series[0];
+                setInterval(function () {
+                    var x = (new Date()).getTime(), // current time
+                        y = corrientes;
+                    series.addPoint([x, y], true, true);
+                }, 1000);
+            }
+        }
+    },
+    title: {
+        text: 'Corriente de la carga'
+    },
+    xAxis: {
+        type: 'datetime',
+        tickPixelInterval: 150
+    },
+    yAxis: {
+        title: {
+            text: 'Amperes'
+        },
+        plotLines: [{
+            value: 0,
+            width: 1,
+            color: '#808080'
+        }]
+    },
+    tooltip: {
+        formatter: function () {
+            return '<b>' + this.series.name + '</b><br/>' +
+                Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                Highcharts.numberFormat(this.y, 2);
+        }
+    },
+    legend: {
+        enabled: false
+    },
+    exporting: {
+        enabled: false
+    },
+    series: [{
+        name: 'Amperes',
+        data: (function () {
+            // generate an array of random data
+            var data = [],
+                time = (new Date()).getTime(),
+                i;
+
+            for (i = -19; i <= 0; i += 1) {
+                data.push({
+                    x: time + i * 1000,
+                    y: -1
+                });
+            }
+            return data;
+        }())
+    }]
+});
+
+
+var Wpanel = Highcharts.chart('Wpanel', {
+    chart: {
+        type: 'spline',
+        animation: Highcharts.svg, // don't animate in old IE
+        marginRight: 10,
+        events: {
+            load: function () {
+
+                // set up the updating of the chart each second
+                var series = this.series[0];
+                setInterval(function () {
+                    var x = (new Date()).getTime(), // current time
+                        y = wattes;
+                    series.addPoint([x, y], true, true);
+                }, 1000);
+            }
+        }
+    },
+    title: {
+        text: 'Potencia de la carga'
+    },
+    xAxis: {
+        type: 'datetime',
+        tickPixelInterval: 150
+    },
+    yAxis: {
+        title: {
+            text: 'Watts'
+        },
+        plotLines: [{
+            value: 0,
+            width: 1,
+            color: '#808080'
+        }]
+    },
+    tooltip: {
+        formatter: function () {
+            return '<b>' + this.series.name + '</b><br/>' +
+                Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
+                Highcharts.numberFormat(this.y, 2);
+        }
+    },
+    legend: {
+        enabled: false
+    },
+    exporting: {
+        enabled: false
+    },
+    series: [{
+        name: 'Watts',
+        data: (function () {
+            // generate an array of random data
+            var data = [],
+                time = (new Date()).getTime(),
+                i;
+
+            for (i = -19; i <= 0; i += 1) {
+                data.push({
+                    x: time + i * 1000,
+                    y: -1
+                });
+            }
+            return data;
+        }())
+    }]
+});
+
+ </script>
+
+</div>
+</body>
+
+</html>

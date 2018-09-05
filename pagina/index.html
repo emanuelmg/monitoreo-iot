@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="Sistema de monitoreo IoT de EcoCasa">
+  <meta name="author" content="Emanuel Murillo">
+  <link rel="icon" type="image/png" sizes="96x96" href="css/casa.png">
+  <title>Monitoreo IoT</title>
+  <!-- Bootstrap core CSS-->
+  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom fonts for this template-->
+  <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <!-- Custom styles for this template-->
+  <link href="css/sb-admin.css" rel="stylesheet">
+   <!--  Fonts and icons -->    
+  <link href="http://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
+  <link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'> 
+  
+  <!-- Animation library for notifications   -->
+  <link href="css/animate.min.css" rel="stylesheet"/>
+
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <script src="https://code.highcharts.com/highcharts.js"></script>
+  <script src="https://code.highcharts.com/highcharts-more.js"></script>
+  <script src="https://code.highcharts.com/modules/exporting.js"></script>
+  <script src="https://code.highcharts.com/modules/solid-gauge.js"></script>
+  
+  <script src="mqttws31.js" type="text/javascript"></script>
+  <!--<script src="jquery.min.js" type="text/javascript"></script>-->
+  <script src="config.js" type="text/javascript"></script>
+
+
+
+</head>
+
+<style type="text/css">
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+  }
+
+.switch input {display:none;}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+
+input:checked + .slider {
+    background-color: #2196F3;
+  }
+
+input:focus + .slider {
+    box-shadow: 0 0 1px #2196F3;
+  }
+
+input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+  }
+
+  /* Rounded sliders */
+.slider.round {
+    border-radius: 34px;
+  }
+
+.slider.round:before {
+    border-radius: 50%;
+  }
+
+
+</style>
+
+<body class="fixed-nav sticky-footer bg-dark" id="page-top">
+  <!-- Navigation-->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
+    <a class="navbar-brand" href="index.html">Sistema de monitoreo IoT de EcoCasa</a>
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarResponsive">
+      <ul class="navbar-nav navbar-sidenav" id="exampleAccordion">
+
+         <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Monitoreo">
+          <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#collapseMonitoreo" data-parent="#exampleAccordion">
+            <i class="fa fa-fw fa-dashboard"></i>
+            <span class="nav-link-text">Monitero</span>
+          </a>
+          <ul class="sidenav-second-level collapse" id="collapseMonitoreo">
+            <li>
+              <a href="index.html">Confort</a>
+            </li>
+            <li>
+              <a href="panel.html">Panel Solar</a>
+            </li>
+            <li>
+              <a href="aero.html">Aerogenerador</a>
+            </li>
+            <li>
+              <a href="consumo.html">Consumo</a>
+            </li>
+            <li>
+              <a href="bateria.html">Bateria</a>
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Historial">
+          <a class="nav-link nav-link-collapse collapsed" data-toggle="collapse" href="#collapseHistorial" data-parent="#exampleAccordion">
+            <i class="fa fa-fw fa-area-chart"></i>
+            <span class="nav-link-text">Historial</span>
+          </a>
+          <ul class="sidenav-second-level collapse" id="collapseHistorial">
+            <li>
+              <a href="historialTemp.php">Temperatura/humedad</a>
+            </li>
+            <li>
+              <a href="historialPanel.php">Panel Solar</a>
+            </li>
+            <li>
+              <a href="historialAero.php">Aerogenerador</a>
+            </li>
+            <li>
+              <a href="historialConsumo.php">Consumo</a>
+            </li>
+            <li>
+              <a href="historialBateria.php">Batería</a>
+            </li>
+            <li>
+              <a href="historialLux.php">Iluminación</a>
+            </li>
+            <li>
+              <a href="historialRad.php">Radiación</a>
+            </li>
+          </ul>
+        </li>
+
+        <li class="nav-item" data-toggle="tooltip" data-placement="right" title="Tables">
+          <a class="nav-link" href="exportar.html">
+            <i class="fa fa-fw fa-table"></i>
+            <span class="nav-link-text">Exportar</span>
+          </a>
+        </li>
+
+       
+          </ul>
+        </li>
+      </ul>
+      <ul class="navbar-nav sidenav-toggler">
+        <li class="nav-item">
+          <a class="nav-link text-center" id="sidenavToggler">
+            <i class="fa fa-fw fa-angle-left"></i>
+          </a>
+        </li>
+      </ul>
+    </ul>
+        <ul class="navbar-nav ml-auto">
+        <li class="nav-item dropdown">
+          
+            <img src="css/NegativoITSON.png" alt="itson" height="65" width="175">
+
+    </li>
+  </ul>
+    
+    </div>
+  </nav>
+  <div class="content-wrapper">
+    <div class="container-fluid">
+      <!-- Breadcrumbs-->
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a href="#">Monitoreo</a>
+        </li>
+        <li class="breadcrumb-item active">Confort</li>
+      </ol>
+  
+      <!-- Temp y hum-->
+      <div class="card mb-4">
+        <div class="card-header">
+          <i class="fa fa-thermometer-quarter"></i> Temperatura/humedad</div>
+        <div class="card-body">
+
+          <div class="row">
+            <div class="col-md-4">
+              <div id="container-temp1" style="width: 300px; height: 200px; float: left"></div> 
+            </div>
+            <div class="col-md-4">
+              <div id="container-hum1" style="width: 300px; height: 200px; float: left"></div>
+            </div>
+            <div class="col-md-4">
+              <div id="container-dew" style="width: 300px; height: 200px; float: left"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+        <div class="card mb-3">
+          <div class="card-header">
+            <i class="fa fa-tachometer"></i> Iluminacion / Control</div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-5">
+                <div id="container" style="min-width: 310px; max-width: 400px; height: 300px; margin: 0 auto"></div>
+              </div>
+              <div>
+                <div class="col-md-5">
+                <br>
+                </div>
+              </div>
+
+              <div clas="col-md-5">
+                  <div class="row">
+                      <a>Manual</a>
+                      <div class="switch">   
+                      <label>
+                          <input id="sw3" type="checkbox" onclick='ControlM()'>
+                          <span class="slider round"></span>
+                      </label>
+                      </div>
+                      <a>Automatico</a>
+                  </div> 
+                  <div>
+                    <br>
+                  </div>
+                  <br>
+
+                  <div  class="row">
+                    <div class="col-md-4"> 
+                      <a>Foco: </a>
+                      <label class="switch">
+                      <input id="sw2" type="checkbox" onclick='OnOffF()'>
+                      <span class="slider round"></span>
+                      </label>
+                      </div>
+                        
+                        <svg width="80" height="65" viewBox="0 0 640 480">
+                         <defs>
+                          <linearGradient id="svg_6" x1="0" y1="0" x2="1" y2="0">
+                           <stop stop-color="#bfbfbf" offset="0"/>
+                           <stop stop-color="#404040" offset="1"/>
+                          </linearGradient>
+                          <linearGradient id="svg_11" x1="0" y1="0" x2="1" y2="1" spreadMethod="pad">
+                           <stop id="led1" stop-color="#000000" stop-opacity="0.992188" offset="0"/>
+                           <stop stop-color="#820101" stop-opacity="0.988281" offset="1"/>
+                          </linearGradient>
+                          <linearGradient id="svg_14" x1="0" y1="0" x2="1" y2="1" spreadMethod="pad">
+                           <stop stop-color="#ffffff" stop-opacity="0.996094" offset="0"/>
+                           <stop stop-color="#d30606" stop-opacity="0.984375" offset="0.703125"/>
+                          </linearGradient>
+                         </defs>
+                         <g>
+                          <title>Layer 1</title>
+                          <circle fill="url(#svg_6)" stroke-width="17.5" stroke-linecap="round" cx="320" cy="240" r="196.125" id="svg_3" fill-opacity="0.77" transform="rotate(90, 320, 240)"/>
+                          <circle fill="url(#svg_6)" stroke-width="17.5" stroke-linecap="round" fill-opacity="0.64" cx="319.252837" cy="239.999045" r="160" id="svg_7"/>
+                          <circle fill="url(#svg_11)" stroke-width="17.5" stroke-linecap="round" cx="320.000535" cy="240.001698" r="150" id="svg_8"/>
+                          <ellipse fill="url(#svg_14)" stroke-width="17.5" stroke-linecap="round" cx="250.179609" cy="170.124194" rx="75.675959" ry="44.402987" id="svg_20" transform="rotate(-47.7626, 250.18, 170.125)"/>
+                         </g>
+                        </svg>
+                        <svg width="80" height="65" viewBox="0 0 640 480">
+                         <defs>
+                          <linearGradient id="svg_26" x1="0" y1="0" x2="1" y2="0">
+                           <stop stop-color="#bfbfbf" offset="0"/>
+                           <stop stop-color="#404040" offset="1"/>
+                          </linearGradient>
+                          <linearGradient id="svg_211" x1="0" y1="0" x2="1" y2="1" spreadMethod="pad">
+                           <stop id="led2" stop-color="#000000" stop-opacity="0.992188" offset="0"/>
+                           <stop stop-color="#018201" stop-opacity="0.988281" offset="1"/>
+                          </linearGradient>
+                          <linearGradient id="svg_214" x1="0" y1="0" x2="1" y2="1" spreadMethod="pad">
+                           <stop stop-color="#ffffff" stop-opacity="0.996094" offset="0"/>
+                           <stop stop-color="#06d306" stop-opacity="0.984375" offset="0.703125"/>
+                          </linearGradient>
+                         </defs>
+                         <g>
+                          <title>Layer 1</title>
+                          <circle fill="url(#svg_26)" stroke-width="17.5" stroke-linecap="round" cx="320" cy="240" r="196.125" id="svg_23" fill-opacity="0.77" transform="rotate(90, 320, 240)"/>
+                          <circle fill="url(#svg_26)" stroke-width="17.5" stroke-linecap="round" fill-opacity="0.64" cx="319.252837" cy="239.999045" r="160" id="svg_27"/>
+                          <circle fill="url(#svg_211)" stroke-width="17.5" stroke-linecap="round" cx="320.000535" cy="240.001698" r="150" id="svg_28"/>
+                          <ellipse fill="url(#svg_214)" stroke-width="17.5" stroke-linecap="round" cx="250.179609" cy="170.124194" rx="75.675959" ry="44.402987" id="svg_220" transform="rotate(-47.7626, 250.18, 170.125)"/>
+                         </g>
+                        </svg>
+                  </div> 
+                    
+                    <br>
+                  <div class="row">
+                    <div class="col-md-4">
+                    <a>Abanico: </a>
+                    <label class="switch">
+                    <input id="sw1" type="checkbox" onclick='OnOffA()'>
+                    <span class="slider round"></span>
+                    </label>
+                    </div>
+                      <svg width="80" height="65" viewBox="0 0 640 480">
+                       <defs>
+                        <linearGradient id="svg_36" x1="0" y1="0" x2="1" y2="0">
+                         <stop stop-color="#bfbfbf" offset="0"/>
+                         <stop stop-color="#404040" offset="1"/>
+                        </linearGradient>
+                        <linearGradient id="svg_311" x1="0" y1="0" x2="1" y2="1" spreadMethod="pad">
+                         <stop id="led3" stop-color="#000000" stop-opacity="0.992188" offset="0"/>
+                         <stop stop-color="#820101" stop-opacity="0.988281" offset="1"/>
+                        </linearGradient>
+                        <linearGradient id="svg_314" x1="0" y1="0" x2="1" y2="1" spreadMethod="pad">
+                         <stop stop-color="#ffffff" stop-opacity="0.996094" offset="0"/>
+                         <stop stop-color="#d30606" stop-opacity="0.984375" offset="0.703125"/>
+                        </linearGradient>
+                       </defs>
+                       <g>
+                        <title>Layer 1</title>
+                        <circle fill="url(#svg_36)" stroke-width="17.5" stroke-linecap="round" cx="320" cy="240" r="196.125" id="svg_33" fill-opacity="0.77" transform="rotate(90, 320, 240)"/>
+                        <circle fill="url(#svg_36)" stroke-width="17.5" stroke-linecap="round" fill-opacity="0.64" cx="319.252837" cy="239.999045" r="160" id="svg_37"/>
+                        <circle fill="url(#svg_311)" stroke-width="17.5" stroke-linecap="round" cx="320.000535" cy="240.001698" r="150" id="svg_38"/>
+                        <ellipse fill="url(#svg_314)" stroke-width="17.5" stroke-linecap="round" cx="250.179609" cy="170.124194" rx="75.675959" ry="44.402987" id="svg_320" transform="rotate(-47.7626, 250.18, 170.125)"/>
+                       </g>
+                      </svg>
+                      <svg width="80" height="65" viewBox="0 0 640 480">
+                       <defs>
+                        <linearGradient id="svg_46" x1="0" y1="0" x2="1" y2="0">
+                         <stop stop-color="#bfbfbf" offset="0"/>
+                         <stop stop-color="#404040" offset="1"/>
+                        </linearGradient>
+                        <linearGradient id="svg_411" x1="0" y1="0" x2="1" y2="1" spreadMethod="pad">
+                         <stop id="led4" stop-color="#000000" stop-opacity="0.992188" offset="0"/>
+                         <stop stop-color="#018201" stop-opacity="0.988281" offset="1"/>
+                        </linearGradient>
+                        <linearGradient id="svg_414" x1="0" y1="0" x2="1" y2="1" spreadMethod="pad">
+                         <stop stop-color="#ffffff" stop-opacity="0.996094" offset="0"/>
+                         <stop stop-color="#06d306" stop-opacity="0.984375" offset="0.703125"/>
+                        </linearGradient>
+                       </defs>
+                       <g>
+                        <title>Layer 1</title>
+                        <circle fill="url(#svg_46)" stroke-width="17.5" stroke-linecap="round" cx="320" cy="240" r="196.125" id="svg_23" fill-opacity="0.77" transform="rotate(90, 320, 240)"/>
+                        <circle fill="url(#svg_46)" stroke-width="17.5" stroke-linecap="round" fill-opacity="0.64" cx="319.252837" cy="239.999045" r="160" id="svg_47"/>
+                        <circle fill="url(#svg_411)" stroke-width="17.5" stroke-linecap="round" cx="320.000535" cy="240.001698" r="150" id="svg_48"/>
+                        <ellipse fill="url(#svg_414)" stroke-width="17.5" stroke-linecap="round" cx="250.179609" cy="170.124194" rx="75.675959" ry="44.402987" id="svg_420" transform="rotate(-47.7626, 250.18, 170.125)"/>
+                       </g>
+                      </svg>
+                  </div>
+                  </div>
+                </div>
+
+              
+            </div>
+           </div>
+          </div>
+      </div>
+    
+    <footer class="sticky-footer">
+      <div class="container">
+        <div class="text-center">
+          <small>Copyright © Emanuel Murillo 2018</small>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+      <i class="fa fa-angle-up"></i>
+    </a>
+    
+    <!-- Bootstrap core JavaScript-->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- Core plugin JavaScript-->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+    <!--  Notifications Plugin    -->
+    <script src="js/bootstrap-notify.js"></script>
+   
+    
+ 
+      
+    <script type="text/javascript">
+    var mqtt;
+    var reconnectTimeout = 2000;
+    esp1 = 0;
+    esp2 = 0;
+    //est2 = 0; 
+    flag2 = 0;
+    usuario1 = 'esp1';
+    usuario2 = 'esp2';
+    temperaturas1 = 1;
+    humedades1 = 1;
+    dewp = 1;
+    lux = 1;
+    estadoFoco = "OFF";     
+    estadoAvanico = "OFF";
+
+    //document.getElementById('sw1').disabled = true;
+    //document.getElementById('sw2').disabled = true;
+
+    document.getElementById('sw3').onchange = function() {
+        
+    document.getElementById('sw1').disabled = this.checked;
+    document.getElementById('sw2').disabled = this.checked;
+
+      };
+
+      function ControlM(){
+        if(document.getElementById('sw3').checked){
+              message = new Paho.MQTT.Message("A");
+              message.destinationName = 'control'
+              mqtt.send(message);
+         } 
+         else{
+              message = new Paho.MQTT.Message("M");
+              message.destinationName = 'control'
+              mqtt.send(message);
+         }
+      }
+
+      function OnOffF(){
+        if (document.getElementById('sw2').checked){
+          message = new Paho.MQTT.Message("ON");
+          message.destinationName = 'foco'
+          mqtt.send(message);
+          estadoFoco = "ON"
+        } 
+        else{
+          message = new Paho.MQTT.Message("OFF");
+          message.destinationName = 'foco'
+          mqtt.send(message);
+          estadoFoco = "OFF"
+        }
+       
+      };
+;
+     function OnOffA(){
+        if (document.getElementById('sw1').checked){
+          message = new Paho.MQTT.Message("ON");
+          message.destinationName = 'ava'
+          mqtt.send(message);
+          estadoAvanico = "ON"
+        } 
+        else{
+          message = new Paho.MQTT.Message("OFF");
+          message.destinationName = 'ava'
+          mqtt.send(message);
+          estadoAvanico = "OFF"
+        }
+      };
+
+    function MQTTconnect() {
+    if (typeof path == "undefined") {
+        path = '/mqtt';
+    }
+    mqtt = new Paho.MQTT.Client(
+            host,
+            port,
+            path,
+            "web_" + parseInt(Math.random() * 100, 10)
+    );
+        var options = {
+            timeout: 3,
+            useSSL: useTLS,
+            cleanSession: cleansession,
+            onSuccess: onConnect,
+            onFailure: function (message) {
+                $('#status').val("Connection failed: " + message.errorMessage + "Retrying");
+                setTimeout(MQTTconnect, reconnectTimeout);
+            }
+        };
+
+        mqtt.onConnectionLost = onConnectionLost;
+        mqtt.onMessageArrived = onMessageArrived;
+
+        if (username != null) {
+            options.userName = username;
+            options.password = password;
+        }
+        console.log("Host="+ host + ", port=" + port + ", path=" + path + " TLS = " + useTLS + " username=" + username + " password=" + password);
+        mqtt.connect(options);
+    }
+
+    function onConnect() {
+        $('#status').val('Connected to ' + host + ':' + port + path);
+        // Connection succeeded; subscribe to our topic
+        mqtt.subscribe(topic, {qos: 0});
+        $('#topic').val(topic);
+           //web = new Paho.MQTT.Message("T");
+           //web.destinationName = '/esp2/request'
+           //mqtt.send(web); 
+           //web2 = new Paho.MQTT.Message("T");
+           //web2.destinationName = '/esp3/request'
+           //mqtt.send(web2);
+           estado1 = new Paho.MQTT.Message("S");
+           estado1.destinationName = '/esp1/status'
+           mqtt.send(estado1);
+           estado2 = new Paho.MQTT.Message("S");
+           estado2.destinationName = '/esp2/status'
+           mqtt.send(estado2);
+
+          $.notify({
+                icon: 'fa fa-hourglass-end',
+                message: " Servidor MQTT Conectando! <br> Espera Datos..."
+
+            },{
+
+                type: 'info',
+                timer: 2000
+            });  
+
+          setTimeout(function(){ 
+
+          if(esp1 == 0){
+            $.notify({
+                icon: 'fa fa-microchip',
+                message: "Node 1 desconectado"
+
+            },{
+
+                type: 'danger',
+                timer: 2000
+            });  
+
+          }
+
+          if(esp2 == 0){
+            $.notify({
+                icon: 'fa fa-microchip',
+                message: "Node 2 desconectado"
+
+            },{
+
+                type: 'danger',
+                timer: 2000
+            });  
+
+          }
+
+         }, 7000);
+
+    };  
+
+    function onConnectionLost(response) {
+
+       $.notify({
+                
+                message: "Error servidor MQTT"
+
+            },{
+                type: 'danger',
+                timer: 2000
+            });  
+
+        setTimeout(MQTTconnect, reconnectTimeout);
+        $('#status').val("connection lost: " + responseObject.errorMessage + ". Reconnecting");
+
+       
+    };
+
+
+    function onMessageArrived(message){
+        
+                
+        if (message.destinationName == '/' + usuario2 + '/' + 'temp') { 
+
+            temperaturas1 = Math.round(parseFloat(message.payloadString));
+            
+            
+        }
+        if (message.destinationName == '/' + usuario2 + '/' + 'hum') { 
+
+             humedades1 = parseFloat(message.payloadString);
+    
+        }
+
+        if (message.destinationName == 'dew') { 
+
+             dewp = parseFloat(message.payloadString);
+    
+        }
+       
+        if (message.destinationName == 'lux') { 
+
+             lux = parseInt(message.payloadString);
+             web = new Paho.MQTT.Message("T");
+             web.destinationName = '/esp2/request'
+             mqtt.send(web) 
+             //clearTimeout(timerId);
+             web = new Paho.MQTT.Message("R");  
+             web.destinationName = '/esp1/request'
+             mqtt.send(web)    
+
+              
+        }
+
+        if(message.destinationName == 'cstat'){
+          estadocarga = message.payloadString;
+          if (estadocarga == '1'){
+             document.getElementById("led3").setAttribute("stop-color", "rgb(0, 0, 0)");
+             document.getElementById("led4").setAttribute("stop-color", "rgb(0, 255, 0)");
+             document.getElementById("led1").setAttribute("stop-color", "rgb(255, 0, 0)");
+             document.getElementById("led2").setAttribute("stop-color", "rgb(0, 0, 0)");
+             document.getElementById('sw1').checked = true;
+             document.getElementById('sw2').checked = false;
+    
+          }
+          if (estadocarga == '2'){
+             document.getElementById("led1").setAttribute("stop-color", "rgb(0, 0, 0)");
+             document.getElementById("led2").setAttribute("stop-color", "rgb(0, 255, 0)");
+             document.getElementById('sw2').checked = true;
+             document.getElementById("led3").setAttribute("stop-color", "rgb(255, 0, 0)");
+             document.getElementById("led4").setAttribute("stop-color", "rgb(0, 0, 0)");
+             document.getElementById('sw1').checked = false
+
+          }
+          if (estadocarga == '3'){
+             document.getElementById("led1").setAttribute("stop-color", "rgb(0, 0, 0)");
+             document.getElementById("led2").setAttribute("stop-color", "rgb(0, 255, 0)");
+             document.getElementById("led3").setAttribute("stop-color", "rgb(0, 0, 0)");
+             document.getElementById("led4").setAttribute("stop-color", "rgb(0, 255, 0)");
+             document.getElementById('sw1').checked = true;
+             document.getElementById('sw2').checked = true;
+  
+          }
+          if(estadocarga == '4'){
+            document.getElementById("led1").setAttribute("stop-color", "rgb(255, 0, 0)");
+            document.getElementById("led2").setAttribute("stop-color", "rgb(0, 0, 0)");
+            document.getElementById('sw2').checked = false;
+            document.getElementById("led3").setAttribute("stop-color", "rgb(255, 0, 0)");
+            document.getElementById("led4").setAttribute("stop-color", "rgb(0, 0, 0)");
+            document.getElementById('sw1').checked = false;
+
+          }
+            web = new Paho.MQTT.Message("R");  
+             web.destinationName = '/esp1/request'
+             mqtt.send(web)    
+
+        }
+        if(message.destinationName == 'contstat'){
+          estadocontrol = message.payloadString;
+          if(estadocontrol == 'N'){
+            document.getElementById('sw3').checked = true;
+          }else if(estadocontrol == 'F'){
+            document.getElementById('sw3').checked = false;
+          }
+        }
+
+
+        if (message.destinationName == 'foco') { //acá coloco el topic
+            //document.getElementById("bomba").textContent = message.payloadString;
+           estadoFoco = message.payloadString;
+          if (estadoFoco == "OFF"){
+            document.getElementById("led1").setAttribute("stop-color", "rgb(255, 0, 0)");
+            document.getElementById("led2").setAttribute("stop-color", "rgb(0, 0, 0)");
+            document.getElementById('sw2').checked = false;
+          }
+          else if (estadoFoco == "ON"){
+           document.getElementById("led1").setAttribute("stop-color", "rgb(0, 0, 0)");
+           document.getElementById("led2").setAttribute("stop-color", "rgb(0, 255, 0)");
+           document.getElementById('sw2').checked = true;
+          } 
+
+        }
+        if (message.destinationName == 'ava') { //acá coloco el topic
+            //document.getElementById("valvula").textContent = message.payloadString;
+          estadoAvanico = message.payloadString;
+          if (estadoAvanico == "OFF"){
+          document.getElementById("led3").setAttribute("stop-color", "rgb(255, 0, 0)");
+          document.getElementById("led4").setAttribute("stop-color", "rgb(0, 0, 0)");
+          document.getElementById('sw1').checked = false;
+          }
+          else if (estadoAvanico == "ON"){
+          document.getElementById("led3").setAttribute("stop-color", "rgb(0, 0, 0)");
+          document.getElementById("led4").setAttribute("stop-color", "rgb(0, 255, 0)");
+          document.getElementById('sw1').checked = true;
+          } 
+        }
+         if (message.destinationName == '/' + usuario1 + '/' + 'status') { 
+
+             estado1 = message.payloadString;
+             if((estado1 == "ACK") && (esp1 == 0) ){
+                web = new Paho.MQTT.Message("R");
+                web.destinationName = '/esp1/request'
+                mqtt.send(web) 
+                esp1 = 1;
+                estado1 == "SYN"
+                $.notify({
+                icon: 'fa fa-handshake-o',
+                message: "Node 1 conectado"
+
+                },{
+
+                type: 'success',
+                timer: 2000
+                 });  
+             }
+
+
+             }
+        
+        if (message.destinationName == '/' + usuario2 + '/' + 'status') { 
+
+             estado2 = message.payloadString;
+             if((estado2 == "ACK") && (esp2 == 0) ){
+                web = new Paho.MQTT.Message("T");
+                web.destinationName = '/esp2/request'
+                mqtt.send(web);
+                estado2 == "SYN"
+                esp2 = 1;
+                $.notify({
+                icon: 'fa fa-handshake-o',
+                message: "Node 2 conectado"
+
+                },{
+
+                type: 'success',
+                timer: 2000
+                 });  
+             }
+            } 
+            
+
+    };
+
+
+
+    $(document).ready(function() {
+        MQTTconnect();
+
+      
+
+    });
+
+
+
+      var gaugeOptions = {
+
+    chart: {
+        type: 'solidgauge'
+    },
+
+    title: null,
+
+    pane: {
+        center: ['50%', '85%'],
+        size: '140%',
+        startAngle: -90,
+        endAngle: 90,
+        background: {
+            backgroundColor: (Highcharts.theme && Highcharts.theme.background2) || '#EEE',
+            innerRadius: '60%',
+            outerRadius: '100%',
+            shape: 'arc'
+        }
+    },
+
+    tooltip: {
+        enabled: false
+    },
+
+    // the value axis
+    yAxis: {
+        stops: [
+            [0.1, '#55BF3B'], // green
+            [0.5, '#DDDF0D'], // yellow
+            [0.9, '#DF5353'] // red
+        ],
+        lineWidth: 0,
+        minorTickInterval: null,
+        tickAmount: 2,
+        title: {
+            y: -70
+        },
+        labels: {
+            y: 16
+        }
+    },
+
+    plotOptions: {
+        solidgauge: {
+            dataLabels: {
+                y: 5,
+                borderWidth: 0,
+                useHTML: true
+            }
+        }
+    }
+};
+
+// The temp gauge
+var chartTemp1 = Highcharts.chart('container-temp1', Highcharts.merge(gaugeOptions, {
+   
+    yAxis: {
+        min: 0,
+        max: 100,
+        title: {
+            text: 'Temperatura Interior'
+        }
+    },
+
+    credits: {
+        enabled: false
+    },
+
+    series: [{
+        name: 'temp1',
+        data: [25],
+        dataLabels: {
+            format: '<div style="text-align:center"><span style="font-size:25px;color:' +
+                ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y}</span><br/>' +
+                   '<span style="font-size:12px;color:silver">ºC</span></div>'
+        },
+        tooltip: {
+            valueSuffix: ' ºC'
+        }
+    }]
+
+}));
+
+// The RPM gauge
+var chartHum1 = Highcharts.chart('container-hum1', Highcharts.merge(gaugeOptions, {
+    yAxis: {
+        min: 0,
+        max: 100,
+        title: {
+            text: 'Humedad Interior'
+        }
+    },
+
+    series: [{
+        name: 'hum1',
+        data: [25],
+        dataLabels: {
+            format: '<div style="text-align:center"><span style="font-size:25px;color:' +
+                ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y:.1f}</span><br/>' +
+                   '<span style="font-size:12px;color:silver">%</span></div>'
+        },
+        tooltip: {
+            valueSuffix: ' %'
+        }
+    }]
+
+}));
+
+var dew = Highcharts.chart('container-dew', Highcharts.merge(gaugeOptions, {
+    yAxis: {
+        min: 0,
+        max: 40,
+        title: {
+            text: 'Punto de Rocio'
+        }
+    },
+
+    series: [{
+        name: 'dew',
+        data: [25],
+        dataLabels: {
+            format: '<div style="text-align:center"><span style="font-size:25px;color:' +
+                ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y:.1f}</span><br/>' +
+                   '<span style="font-size:12px;color:silver"> </span></div>'
+        },
+        tooltip: {
+            valueSuffix: ' '
+        }
+    }]
+
+}));
+
+
+
+setInterval(function () {
+    
+    // RPM
+    if (chartTemp1) {
+        point = chartTemp1.series[0].points[0];
+        newVal = temperaturas1;
+
+        point.update(newVal);
+    }
+
+   
+    if (chartHum1) {
+        point = chartHum1.series[0].points[0];
+        newVal = humedades1;
+
+        point.update(newVal);
+    }
+     if (dew) {
+        point = dew.series[0].points[0];
+        newVal = dewp;
+
+        point.update(newVal);
+    }
+}, 1000);
+
+
+    </script>  
+    <script type="text/javascript">
+      Highcharts.setOptions({
+    global: {
+        useUTC: false
+    }
+});
+
+
+       Highcharts.chart('container', {
+
+        chart: {
+            type: 'gauge',
+            plotBackgroundColor: null,
+            plotBackgroundImage: null,
+            plotBorderWidth: 0,
+            plotShadow: false
+        },
+
+        title: {
+            text: 'Luxómetro'
+        },
+
+        pane: {
+            startAngle: -150,
+            endAngle: 150,
+            background: [{
+                backgroundColor: {
+                    linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                    stops: [
+                        [0, '#FFF'],
+                        [1, '#333']
+                    ]
+                },
+                borderWidth: 0,
+                outerRadius: '109%'
+            }, {
+                backgroundColor: {
+                    linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                    stops: [
+                        [0, '#333'],
+                        [1, '#FFF']
+                    ]
+                },
+                borderWidth: 1,
+                outerRadius: '107%'
+            }, {
+                // default background
+            }, {
+                backgroundColor: '#DDD',
+                borderWidth: 0,
+                outerRadius: '105%',
+                innerRadius: '103%'
+            }]
+        },
+
+        // the value axis
+        yAxis: {
+            min: 0,
+            max: 1000,
+
+            minorTickInterval: 'auto',
+            minorTickWidth: 1,
+            minorTickLength: 10,
+            minorTickPosition: 'inside',
+            minorTickColor: '#666',
+
+            tickPixelInterval: 30,
+            tickWidth: 2,
+            tickPosition: 'inside',
+            tickLength: 10,
+            tickColor: '#666',
+            labels: {
+                step: 2,
+                rotation: 'auto'
+            },
+            title: {
+                text: 'Lux'
+            },
+            plotBands: [{
+                from: 0,
+                to: 200,
+                //color: '#55BF3B' // green
+                color: '#DF5353'
+            }, {
+                from: 200,
+                to: 500,
+                color: '#DDDF0D' // yellow
+            }, {
+                from: 500,
+                to: 1000,
+                //color: '#DF5353' // red
+                color: '#55BF3B'
+            }]
+        },
+
+        series: [{
+            name: 'light',
+            data: [80],
+            tooltip: {
+                valueSuffix: ' lux'
+            }
+        }]
+
+    },
+    // Add some life
+    function (chart) {
+        if (!chart.renderer.forExport) {
+            setInterval(function () {
+                var point = chart.series[0].points[0],
+                    newVal,
+                    inc = Math.round((Math.random() - 0.5) * 20);
+
+                newVal = lux;
+                
+
+                point.update(newVal);
+
+            }, 3000);
+        }
+    });
+
+   //Hola:)    
+    
+
+
+ </script>
+
+ </div>
+</body>
+
+</html>
